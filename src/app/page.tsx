@@ -5,6 +5,9 @@ import Image from "next/image";
 import { useQuery } from "react-query";
 import { Loader } from "@/components/Loader";
 import { format, parseISO } from "date-fns";
+import { MainContainer } from "@/components/MainContainer";
+import { converter } from "@/utils/converter";
+import { WeatherIcon } from "@/components/WeatherIcon";
 
 interface WeatherDetail {
   dt: number;
@@ -79,8 +82,8 @@ export default function Home() {
     <div className="flex flex-col gap-4 bg-gray-900 min-h-screen">
       <Navbar />
       <main className="px-3 max-w-7xl mx-auto flex flex-col gap-9 w-full pb-10 pt-4">
-        <section>
-          <div>
+        <section className="space-y-4">
+          <div className="space-y-2">
             <h2 className="flex gap-4 text-2xl items-end">
               <p className="text-white">
                 {format(parseISO(day?.dt_txt ?? ""), "EEEE")}
@@ -89,6 +92,42 @@ export default function Home() {
                 ({format(parseISO(day?.dt_txt ?? ""), "dd.MM.yyyy")})
               </p>
             </h2>
+            <MainContainer className="gap-10 px-6 items-center">
+              <div className="flex flex-col px-4 text-white">
+                <span className="text-5xl">
+                  {converter(day?.main.temp ?? 296.37)}°
+                </span>
+                <p className="text-xs space-x-1 whitespace-nowrap">
+                  <span>Feels like</span>
+                  <span>{converter(day?.main.feels_like ?? 296.37)}°</span>
+                </p>
+                <p className="text-xs space-x-2">
+                  <span>
+                    {converter(day?.main.temp_min ?? 0)}
+                    °↓{" "}
+                  </span>
+                  <span>
+                    {" "}
+                    {converter(day?.main.temp_max ?? 0)}
+                    °↑
+                  </span>
+                </p>
+              </div>
+              <div className="flex gap-10 sm:gap-16 overflow-x-auto w-full justify-between pr-3">
+                {data?.list.map((d, i) => (
+                  <div
+                    key={i}
+                    className="flex flex-col justify-between gap-2 items-center text-xs text-white font-semibold"
+                  >
+                    <p className="whitespace-nowrap">
+                      {format(parseISO(d.dt_txt), "h:mm a")}
+                    </p>
+                    <WeatherIcon iconName={d.weather[0].icon} />
+                    <p>{converter(d.main.temp ?? 0)}°</p>
+                  </div>
+                ))}
+              </div>
+            </MainContainer>
           </div>
         </section>
       </main>
